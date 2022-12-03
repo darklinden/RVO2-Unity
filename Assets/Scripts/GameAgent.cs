@@ -4,14 +4,35 @@ using System.Collections.Generic;
 using RVO;
 using UnityEngine;
 using Random = System.Random;
-using Vector2 = RVO.Vector2;
+using Vec2 = RVO.Vec2;
 
 public class GameAgent : MonoBehaviour
 {
-    [HideInInspector] public int sid = -1;
+    // [HideInInspector]
+    public int sid = -1;
+
+    public MeshRenderer meshRenderer;
 
     /** Random number generator. */
     private Random m_random = new Random();
+
+    internal void Flash()
+    {
+        if (meshRenderer == null)
+            meshRenderer = GetComponentInChildren<MeshRenderer>();
+
+        StartCoroutine(FlashCoroutine());
+    }
+
+    private WaitForSeconds m_waitForSeconds = new WaitForSeconds(0.2f);
+
+    private IEnumerator FlashCoroutine()
+    {
+        meshRenderer.material.color = Color.red;
+        yield return m_waitForSeconds;
+        meshRenderer.material.color = Color.white;
+    }
+
     // Use this for initialization
     void Start()
     {
@@ -22,33 +43,34 @@ public class GameAgent : MonoBehaviour
     {
         if (sid >= 0)
         {
-            Vector2 pos = Simulator.Instance.getAgentPosition(sid);
-            Vector2 vel = Simulator.Instance.getAgentPrefVelocity(sid);
+            Vec2 pos = Simulator.Instance.getAgentPosition(sid);
+            Vec2 vel = Simulator.Instance.getAgentPrefVelocity(sid);
             transform.position = new Vector3(pos.x(), transform.position.y, pos.y());
             if (Math.Abs(vel.x()) > 0.01f && Math.Abs(vel.y()) > 0.01f)
                 transform.forward = new Vector3(vel.x(), 0, vel.y()).normalized;
         }
 
-        if (!Input.GetMouseButton(1))
+        if (Input.GetMouseButton(0))
         {
-            Simulator.Instance.setAgentPrefVelocity(sid, new Vector2(0, 0));
+            Simulator.Instance.setAgentPrefVelocity(sid, new Vec2(0, 0));
             return;
         }
-
-        Vector2 goalVector = GameMainManager.Instance.mousePosition - Simulator.Instance.getAgentPosition(sid);
-        if (RVOMath.absSq(goalVector) > 1.0f)
+        else if (Input.GetMouseButton(1))
         {
-            goalVector = RVOMath.normalize(goalVector);
+            Vec2 goalVector = GameMainManager.Instance.mousePosition - Simulator.Instance.getAgentPosition(sid);
+            if (RVOMath.absSq(goalVector) > 1.0f)
+            {
+                goalVector = RVOMath.normalize(goalVector);
+            }
+
+            Simulator.Instance.setAgentPrefVelocity(sid, goalVector);
+
+            /* Perturb a little to avoid deadlocks due to perfect symmetry. */
+            float angle = (float)m_random.NextDouble() * 2.0f * (float)Math.PI;
+            float dist = (float)m_random.NextDouble() * 0.0001f;
+
+            Simulator.Instance.setAgentPrefVelocity(sid, Simulator.Instance.getAgentPrefVelocity(sid) +
+                                                         dist * new Vec2((float)Math.Cos(angle), (float)Math.Sin(angle)));
         }
-
-        Simulator.Instance.setAgentPrefVelocity(sid, goalVector);
-
-        /* Perturb a little to avoid deadlocks due to perfect symmetry. */
-        float angle = (float) m_random.NextDouble()*2.0f*(float) Math.PI;
-        float dist = (float) m_random.NextDouble()*0.0001f;
-
-        Simulator.Instance.setAgentPrefVelocity(sid, Simulator.Instance.getAgentPrefVelocity(sid) +
-                                                     dist*
-                                                     new Vector2((float) Math.Cos(angle), (float) Math.Sin(angle)));
     }
 }
