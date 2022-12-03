@@ -43,6 +43,8 @@ namespace RVO
         internal float x_;
         internal float y_;
 
+        public static Vec2 zero = new Vec2(0, 0);
+
         /**
          * <summary>Constructs and initializes a two-dimensional vector from the
          * specified xy-coordinates.</summary>
@@ -74,10 +76,7 @@ namespace RVO
          *
          * <returns>The x-coordinate of the two-dimensional vector.</returns>
          */
-        public float x()
-        {
-            return x_;
-        }
+        public float x => x_;
 
         /**
          * <summary>Returns the y-coordinate of this two-dimensional vector.
@@ -85,10 +84,7 @@ namespace RVO
          *
          * <returns>The y-coordinate of the two-dimensional vector.</returns>
          */
-        public float y()
-        {
-            return y_;
-        }
+        public float y => y_;
 
         /**
          * <summary>Computes the dot product of the two specified

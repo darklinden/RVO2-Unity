@@ -32,19 +32,22 @@
 
 using System;
 using System.Collections.Generic;
+using XPool;
 
 namespace RVO
 {
     /**
      * <summary>Defines an agent in the simulation.</summary>
      */
-    internal partial class Agent
+    public partial class Agent : IDisposable
     {
         internal IList<KeyValuePair<float, Agent>> agentNeighbors_ = new List<KeyValuePair<float, Agent>>(32);
         internal IList<KeyValuePair<float, Obstacle>> obstacleNeighbors_ = new List<KeyValuePair<float, Obstacle>>(32);
         internal IList<Line> orcaLines_ = new List<Line>(32);
-        internal Vec2 position_;
-        internal Vec2 prefVelocity_;
+
+        public Vec2 position { get; internal set; }
+        public Vec2 prefVelocity { get; set; }
+
         internal Vec2 velocity_;
         internal int id_ = 0;
         internal int maxNeighbors_ = 0;
@@ -57,20 +60,52 @@ namespace RVO
 
         private Vec2 newVelocity_;
 
-        internal void compute()
+
+        internal void compute(float deltaTime)
         {
             computeNeighbors();
-            computeNewVelocity();
+            computeNewVelocity(deltaTime);
         }
 
         /**
          * <summary>Updates the two-dimensional position and two-dimensional
          * velocity of this agent.</summary>
          */
-        internal void update()
+        internal void update(float deltaTime)
         {
+            if (float.IsNaN(newVelocity_.x) || float.IsNaN(newVelocity_.y))
+            {
+                Log.W("newVelocity is NaN");
+                newVelocity_ = Vec2.zero;
+            }
             velocity_ = newVelocity_;
-            position_ += velocity_ * Simulator.Instance.timeStep_;
+            position += velocity_ * deltaTime;
+        }
+
+        public static Agent Get()
+        {
+            return AnyPool<Agent>.Get();
+        }
+
+        public void Dispose()
+        {
+            agentNeighbors_.Clear();
+            obstacleNeighbors_.Clear();
+            orcaLines_.Clear();
+            position = Vec2.zero;
+            prefVelocity = Vec2.zero;
+            velocity_ = Vec2.zero;
+            id_ = 0;
+            maxNeighbors_ = 0;
+            maxSpeed_ = 0.0f;
+            neighborDist_ = 0.0f;
+            radius_ = 0.0f;
+            timeHorizon_ = 0.0f;
+            timeHorizonObst_ = 0.0f;
+            needDelete_ = false;
+            newVelocity_ = Vec2.zero;
+
+            AnyPool<Agent>.Release(this);
         }
     }
 }

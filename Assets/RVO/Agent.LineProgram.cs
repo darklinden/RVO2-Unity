@@ -6,7 +6,7 @@ namespace RVO
     /**
      * <summary>Defines an agent in the simulation.</summary>
      */
-    internal partial class Agent
+    public partial class Agent
     {
         /**
          * <summary>Solves a one-dimensional linear program on a specified line
@@ -222,7 +222,7 @@ namespace RVO
                     }
 
                     Vec2 tempResult = result;
-                    if (linearProgram2(projLines, radius, new Vec2(-lines[i].direction.y(), lines[i].direction.x()), true, ref result) < projLines.Count)
+                    if (linearProgram2(projLines, radius, new Vec2(-lines[i].direction.y, lines[i].direction.x), true, ref result) < projLines.Count)
                     {
                         /*
                          * This should in principle not happen. The result is by

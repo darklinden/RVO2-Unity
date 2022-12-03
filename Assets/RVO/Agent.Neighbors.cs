@@ -38,7 +38,7 @@ namespace RVO
     /**
      * <summary>Defines an agent in the simulation.</summary>
      */
-    internal partial class Agent
+    public partial class Agent
     {
         /**
          * <summary>Computes the neighbors of this agent.</summary>
@@ -69,7 +69,7 @@ namespace RVO
         {
             if (this != agent)
             {
-                float distSq = RVOMath.absSq(position_ - agent.position_);
+                float distSq = RVOMath.absSq(position - agent.position);
 
                 if (distSq < rangeSq)
                 {
@@ -108,7 +108,7 @@ namespace RVO
         {
             Obstacle nextObstacle = obstacle.next_;
 
-            float distSq = RVOMath.distSqPointLineSegment(obstacle.point_, nextObstacle.point_, position_);
+            float distSq = RVOMath.distSqPointLineSegment(obstacle.point_, nextObstacle.point_, position);
 
             if (distSq < rangeSq)
             {

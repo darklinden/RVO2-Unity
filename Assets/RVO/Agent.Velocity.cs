@@ -38,12 +38,12 @@ namespace RVO
     /**
      * <summary>Defines an agent in the simulation.</summary>
      */
-    internal partial class Agent
+    public partial class Agent
     {
         /**
          * <summary>Computes the new velocity of this agent.</summary>
          */
-        internal void computeNewVelocity()
+        internal void computeNewVelocity(float deltaTime)
         {
             orcaLines_.Clear();
 
@@ -52,12 +52,11 @@ namespace RVO
             /* Create obstacle ORCA lines. */
             for (int i = 0; i < obstacleNeighbors_.Count; ++i)
             {
-
                 Obstacle obstacle1 = obstacleNeighbors_[i].Value;
                 Obstacle obstacle2 = obstacle1.next_;
 
-                Vec2 relativePosition1 = obstacle1.point_ - position_;
-                Vec2 relativePosition2 = obstacle2.point_ - position_;
+                Vec2 relativePosition1 = obstacle1.point_ - position;
+                Vec2 relativePosition2 = obstacle2.point_ - position;
 
                 /*
                  * Check if velocity obstacle of obstacle is already taken care
@@ -98,7 +97,7 @@ namespace RVO
                     if (obstacle1.convex_)
                     {
                         line.point = new Vec2(0.0f, 0.0f);
-                        line.direction = RVOMath.normalize(new Vec2(-relativePosition1.y(), relativePosition1.x()));
+                        line.direction = RVOMath.normalize(new Vec2(-relativePosition1.y, relativePosition1.x));
                         orcaLines_.Add(line);
                     }
 
@@ -113,7 +112,7 @@ namespace RVO
                     if (obstacle2.convex_ && RVOMath.det(relativePosition2, obstacle2.direction_) >= 0.0f)
                     {
                         line.point = new Vec2(0.0f, 0.0f);
-                        line.direction = RVOMath.normalize(new Vec2(-relativePosition2.y(), relativePosition2.x()));
+                        line.direction = RVOMath.normalize(new Vec2(-relativePosition2.y, relativePosition2.x));
                         orcaLines_.Add(line);
                     }
 
@@ -152,8 +151,8 @@ namespace RVO
                     obstacle2 = obstacle1;
 
                     float leg1 = RVOMath.sqrt(distSq1 - radiusSq);
-                    leftLegDirection = new Vec2(relativePosition1.x() * leg1 - relativePosition1.y() * radius_, relativePosition1.x() * radius_ + relativePosition1.y() * leg1) / distSq1;
-                    rightLegDirection = new Vec2(relativePosition1.x() * leg1 + relativePosition1.y() * radius_, -relativePosition1.x() * radius_ + relativePosition1.y() * leg1) / distSq1;
+                    leftLegDirection = new Vec2(relativePosition1.x * leg1 - relativePosition1.y * radius_, relativePosition1.x * radius_ + relativePosition1.y * leg1) / distSq1;
+                    rightLegDirection = new Vec2(relativePosition1.x * leg1 + relativePosition1.y * radius_, -relativePosition1.x * radius_ + relativePosition1.y * leg1) / distSq1;
                 }
                 else if (s > 1.0f && distSqLine <= radiusSq)
                 {
@@ -170,8 +169,8 @@ namespace RVO
                     obstacle1 = obstacle2;
 
                     float leg2 = RVOMath.sqrt(distSq2 - radiusSq);
-                    leftLegDirection = new Vec2(relativePosition2.x() * leg2 - relativePosition2.y() * radius_, relativePosition2.x() * radius_ + relativePosition2.y() * leg2) / distSq2;
-                    rightLegDirection = new Vec2(relativePosition2.x() * leg2 + relativePosition2.y() * radius_, -relativePosition2.x() * radius_ + relativePosition2.y() * leg2) / distSq2;
+                    leftLegDirection = new Vec2(relativePosition2.x * leg2 - relativePosition2.y * radius_, relativePosition2.x * radius_ + relativePosition2.y * leg2) / distSq2;
+                    rightLegDirection = new Vec2(relativePosition2.x * leg2 + relativePosition2.y * radius_, -relativePosition2.x * radius_ + relativePosition2.y * leg2) / distSq2;
                 }
                 else
                 {
@@ -179,7 +178,7 @@ namespace RVO
                     if (obstacle1.convex_)
                     {
                         float leg1 = RVOMath.sqrt(distSq1 - radiusSq);
-                        leftLegDirection = new Vec2(relativePosition1.x() * leg1 - relativePosition1.y() * radius_, relativePosition1.x() * radius_ + relativePosition1.y() * leg1) / distSq1;
+                        leftLegDirection = new Vec2(relativePosition1.x * leg1 - relativePosition1.y * radius_, relativePosition1.x * radius_ + relativePosition1.y * leg1) / distSq1;
                     }
                     else
                     {
@@ -190,7 +189,7 @@ namespace RVO
                     if (obstacle2.convex_)
                     {
                         float leg2 = RVOMath.sqrt(distSq2 - radiusSq);
-                        rightLegDirection = new Vec2(relativePosition2.x() * leg2 + relativePosition2.y() * radius_, -relativePosition2.x() * radius_ + relativePosition2.y() * leg2) / distSq2;
+                        rightLegDirection = new Vec2(relativePosition2.x * leg2 + relativePosition2.y * radius_, -relativePosition2.x * radius_ + relativePosition2.y * leg2) / distSq2;
                     }
                     else
                     {
@@ -225,8 +224,8 @@ namespace RVO
                 }
 
                 /* Compute cut-off centers. */
-                Vec2 leftCutOff = invTimeHorizonObst * (obstacle1.point_ - position_);
-                Vec2 rightCutOff = invTimeHorizonObst * (obstacle2.point_ - position_);
+                Vec2 leftCutOff = invTimeHorizonObst * (obstacle1.point_ - position);
+                Vec2 rightCutOff = invTimeHorizonObst * (obstacle2.point_ - position);
                 Vec2 cutOffVector = rightCutOff - leftCutOff;
 
                 /* Project current velocity on velocity obstacle. */
@@ -241,7 +240,7 @@ namespace RVO
                     /* Project on left cut-off circle. */
                     Vec2 unitW = RVOMath.normalize(velocity_ - leftCutOff);
 
-                    line.direction = new Vec2(unitW.y(), -unitW.x());
+                    line.direction = new Vec2(unitW.y, -unitW.x);
                     line.point = leftCutOff + radius_ * invTimeHorizonObst * unitW;
                     orcaLines_.Add(line);
 
@@ -252,7 +251,7 @@ namespace RVO
                     /* Project on right cut-off circle. */
                     Vec2 unitW = RVOMath.normalize(velocity_ - rightCutOff);
 
-                    line.direction = new Vec2(unitW.y(), -unitW.x());
+                    line.direction = new Vec2(unitW.y, -unitW.x);
                     line.point = rightCutOff + radius_ * invTimeHorizonObst * unitW;
                     orcaLines_.Add(line);
 
@@ -271,7 +270,7 @@ namespace RVO
                 {
                     /* Project on cut-off line. */
                     line.direction = -obstacle1.direction_;
-                    line.point = leftCutOff + radius_ * invTimeHorizonObst * new Vec2(-line.direction.y(), line.direction.x());
+                    line.point = leftCutOff + radius_ * invTimeHorizonObst * new Vec2(-line.direction.y, line.direction.x);
                     orcaLines_.Add(line);
 
                     continue;
@@ -286,7 +285,7 @@ namespace RVO
                     }
 
                     line.direction = leftLegDirection;
-                    line.point = leftCutOff + radius_ * invTimeHorizonObst * new Vec2(-line.direction.y(), line.direction.x());
+                    line.point = leftCutOff + radius_ * invTimeHorizonObst * new Vec2(-line.direction.y, line.direction.x);
                     orcaLines_.Add(line);
 
                     continue;
@@ -299,7 +298,7 @@ namespace RVO
                 }
 
                 line.direction = -rightLegDirection;
-                line.point = rightCutOff + radius_ * invTimeHorizonObst * new Vec2(-line.direction.y(), line.direction.x());
+                line.point = rightCutOff + radius_ * invTimeHorizonObst * new Vec2(-line.direction.y, line.direction.x);
                 orcaLines_.Add(line);
             }
 
@@ -312,7 +311,7 @@ namespace RVO
             {
                 Agent other = agentNeighbors_[i].Value;
 
-                Vec2 relativePosition = other.position_ - position_;
+                Vec2 relativePosition = other.position - position;
                 Vec2 relativeVelocity = velocity_ - other.velocity_;
                 float distSq = RVOMath.absSq(relativePosition);
                 float combinedRadius = radius_ + other.radius_;
@@ -336,7 +335,7 @@ namespace RVO
                         float wLength = RVOMath.sqrt(wLengthSq);
                         Vec2 unitW = w / wLength;
 
-                        line.direction = new Vec2(unitW.y(), -unitW.x());
+                        line.direction = new Vec2(unitW.y, -unitW.x);
                         u = (combinedRadius * invTimeHorizon - wLength) * unitW;
                     }
                     else
@@ -347,12 +346,12 @@ namespace RVO
                         if (RVOMath.det(relativePosition, w) > 0.0f)
                         {
                             /* Project on left leg. */
-                            line.direction = new Vec2(relativePosition.x() * leg - relativePosition.y() * combinedRadius, relativePosition.x() * combinedRadius + relativePosition.y() * leg) / distSq;
+                            line.direction = new Vec2(relativePosition.x * leg - relativePosition.y * combinedRadius, relativePosition.x * combinedRadius + relativePosition.y * leg) / distSq;
                         }
                         else
                         {
                             /* Project on right leg. */
-                            line.direction = -new Vec2(relativePosition.x() * leg + relativePosition.y() * combinedRadius, -relativePosition.x() * combinedRadius + relativePosition.y() * leg) / distSq;
+                            line.direction = -new Vec2(relativePosition.x * leg + relativePosition.y * combinedRadius, -relativePosition.x * combinedRadius + relativePosition.y * leg) / distSq;
                         }
 
                         float dotProduct2 = relativeVelocity * line.direction;
@@ -362,7 +361,7 @@ namespace RVO
                 else
                 {
                     /* Collision. Project on cut-off circle of time timeStep. */
-                    float invTimeStep = 1.0f / Simulator.Instance.timeStep_;
+                    float invTimeStep = 1.0f / deltaTime;
 
                     /* Vector from cutoff center to relative velocity. */
                     Vec2 w = relativeVelocity - invTimeStep * relativePosition;
@@ -370,7 +369,7 @@ namespace RVO
                     float wLength = RVOMath.abs(w);
                     Vec2 unitW = w / wLength;
 
-                    line.direction = new Vec2(unitW.y(), -unitW.x());
+                    line.direction = new Vec2(unitW.y, -unitW.x);
                     u = (combinedRadius * invTimeStep - wLength) * unitW;
                 }
 
@@ -378,7 +377,7 @@ namespace RVO
                 orcaLines_.Add(line);
             }
 
-            int lineFail = linearProgram2(orcaLines_, maxSpeed_, prefVelocity_, false, ref newVelocity_);
+            int lineFail = linearProgram2(orcaLines_, maxSpeed_, prefVelocity, false, ref newVelocity_);
 
             if (lineFail < orcaLines_.Count)
             {
