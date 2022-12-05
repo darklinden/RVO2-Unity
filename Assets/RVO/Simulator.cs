@@ -38,16 +38,15 @@ namespace RVO
     /**
      * <summary>Defines the simulation.</summary>
      */
-    public partial class Simulator
+    public partial class RVOSimulator
     {
         // static instance
-        private static Lazy<Simulator> sm_LazyInstance = new Lazy<Simulator>(() => new Simulator());
-        public static Simulator Instance => sm_LazyInstance.Value;
-
+        // private static Lazy<RVOSimulator> sm_LazyInstance = new Lazy<RVOSimulator>(() => new RVOSimulator());
+        // public static RVOSimulator Instance => sm_LazyInstance.Value;
 
 
         internal List<Agent> agents_;
-        public IReadOnlyList<Agent> Agents => agents_.AsReadOnly();
+        // public IReadOnlyList<Agent> Agents => agents_.AsReadOnly();
         internal List<Obstacle> obstacles_;
         internal KdTree kdTree_;
         private float globalTime_;
@@ -56,7 +55,7 @@ namespace RVO
         /**
          * <summary>Constructs and initializes a simulation.</summary>
          */
-        private Simulator()
+        public RVOSimulator()
         {
             Clear();
         }
@@ -80,17 +79,17 @@ namespace RVO
          *
          * <returns>The global time after the simulation step.</returns>
          */
-        public float doStep(float deltaTime)
+        public float StepUpdate(float deltaTime)
         {
             updateObstacles();
 
             updateDeleteAgent();
 
-            kdTree_.buildAgentTree();
+            kdTree_.buildAgentTree(this);
 
             for (int block = 0; block < agents_.Count; block++)
             {
-                agents_[block].compute(deltaTime);
+                agents_[block].compute(this, deltaTime);
             }
 
             for (int block = 0; block < agents_.Count; block++)

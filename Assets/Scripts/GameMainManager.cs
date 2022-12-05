@@ -6,11 +6,19 @@ using UnityEngine.Assertions;
 public class GameMainManager : SingletonBehaviour<GameMainManager>
 {
     public GameObject agentPrefab;
-
-    [HideInInspector] public Vec2 mousePosition;
-
+    public Vec2 mousePosition;
     private Plane m_hPlane = new Plane(Vector3.up, Vector3.zero);
     private Dictionary<int, GameAgent> m_agentMap = new Dictionary<int, GameAgent>();
+
+    private RVOSimulator m_simulator = null;
+    public RVOSimulator GetSimulator()
+    {
+        if (m_simulator == null)
+        {
+            m_simulator = new RVOSimulator();
+        }
+        return m_simulator;
+    }
 
     // Use this for initialization
     void Start()
@@ -31,25 +39,25 @@ public class GameMainManager : SingletonBehaviour<GameMainManager>
 
     void DeleteAgent()
     {
-        int agentNo = Simulator.Instance.queryNearAgent(mousePosition, 1.5f);
+        int agentNo = GetSimulator().queryNearAgent(mousePosition, 1.5f);
         if (agentNo == -1 || !m_agentMap.ContainsKey(agentNo))
             return;
 
-        Simulator.Instance.delAgent(agentNo);
+        GetSimulator().delAgent(agentNo);
         Destroy(m_agentMap[agentNo].gameObject);
         m_agentMap.Remove(agentNo);
     }
 
     void CreatAgent()
     {
-        int sid = Simulator.Instance.addAgent(
+        int sid = GetSimulator().addAgent(
             mousePosition,
-            15.0f,
+            2f,
             10,
-            5.0f,
-            5.0f,
-            2.0f,
-            10.0f,
+            1f,
+            1f,
+            0.6f,
+            10,
             new Vec2(0.0f, 0.0f));
         if (sid >= 0)
         {
@@ -64,7 +72,7 @@ public class GameMainManager : SingletonBehaviour<GameMainManager>
     // void foo()
     // {
 
-    //     var agent = Simulator.Instance.getAgent(sid);
+    //     var agent = GetSimulator().getAgent(sid);
     //     Vec2 pos = agent.position;
     //     Vec2 vel = agent.prefVelocity;
     //     transform.position = new Vector3(pos.x, transform.position.y, pos.y);
@@ -109,18 +117,18 @@ public class GameMainManager : SingletonBehaviour<GameMainManager>
         }
         else if (Input.GetMouseButton(2))
         {
-            var agentNo = Simulator.Instance.queryNearAgent(mousePosition, 1.5f);
+            var agentNo = GetSimulator().queryNearAgent(mousePosition, 1.5f);
             if (agentNo != -1 && m_agentMap.TryGetValue(agentNo, out var agent))
             {
                 agent.Flash();
             }
         }
 
-        Simulator.Instance.doStep(Time.deltaTime);
+        GetSimulator().StepUpdate(Time.deltaTime);
 
         foreach (var ga in m_agentMap.Values)
         {
-            var agent = Simulator.Instance.getAgent(ga.sid);
+            var agent = GetSimulator().getAgent(ga.sid);
             Vec2 pos = agent.position;
             Vec2 vel = agent.prefVelocity;
             ga.transform.position = new Vector3(pos.x, ga.transform.position.y, pos.y);

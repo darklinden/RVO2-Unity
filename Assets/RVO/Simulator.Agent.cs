@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace RVO
 {
-    public partial class Simulator
+    public partial class RVOSimulator
     {
         internal IDictionary<int, int> agentNo2indexDict_;
         internal IDictionary<int, int> index2agentNoDict_;
@@ -109,7 +109,7 @@ namespace RVO
             agent.id_ = sm_AgentId;
             sm_AgentId++;
             agent.maxNeighbors_ = maxNeighbors;
-            agent.maxSpeed_ = maxSpeed;
+            agent.maxSpeed = maxSpeed;
             agent.neighborDist_ = neighborDist;
             agent.position = position;
             agent.radius_ = radius;

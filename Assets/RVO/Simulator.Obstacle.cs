@@ -38,7 +38,7 @@ namespace RVO
     /**
      * <summary>Defines the simulation.</summary>
      */
-    public partial class Simulator
+    public partial class RVOSimulator
     {
         private bool m_ObstacleTreeDirty = true;
         private void MarkObstacleTreeDirty()
@@ -127,7 +127,7 @@ namespace RVO
         {
             if (m_ObstacleTreeDirty)
             {
-                kdTree_.buildObstacleTree();
+                kdTree_.buildObstacleTree(this);
                 m_ObstacleTreeDirty = false;
             }
         }

@@ -43,18 +43,18 @@ namespace RVO
         /**
          * <summary>Computes the neighbors of this agent.</summary>
          */
-        internal void computeNeighbors()
+        internal void computeNeighbors(RVOSimulator simulator)
         {
             obstacleNeighbors_.Clear();
-            float rangeSq = RVOMath.sqr(timeHorizonObst_ * maxSpeed_ + radius_);
-            Simulator.Instance.kdTree_.computeObstacleNeighbors(this, rangeSq);
+            float rangeSq = RVOMath.sqr(timeHorizonObst_ * maxSpeed + radius_);
+            simulator.kdTree_.computeObstacleNeighbors(this, rangeSq);
 
             agentNeighbors_.Clear();
 
             if (maxNeighbors_ > 0)
             {
                 rangeSq = RVOMath.sqr(neighborDist_);
-                Simulator.Instance.kdTree_.computeAgentNeighbors(this, ref rangeSq);
+                simulator.kdTree_.computeAgentNeighbors(this, ref rangeSq);
             }
         }
 

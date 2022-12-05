@@ -377,11 +377,11 @@ namespace RVO
                 orcaLines_.Add(line);
             }
 
-            int lineFail = linearProgram2(orcaLines_, maxSpeed_, prefVelocity, false, ref newVelocity_);
+            int lineFail = linearProgram2(orcaLines_, maxSpeed, prefVelocity, false, ref newVelocity_);
 
             if (lineFail < orcaLines_.Count)
             {
-                linearProgram3(orcaLines_, numObstLines, lineFail, maxSpeed_, ref newVelocity_);
+                linearProgram3(orcaLines_, numObstLines, lineFail, maxSpeed, ref newVelocity_);
             }
         }
     }

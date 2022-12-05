@@ -51,7 +51,9 @@ namespace RVO
         internal Vec2 velocity_;
         internal int id_ = 0;
         internal int maxNeighbors_ = 0;
-        internal float maxSpeed_ = 0.0f;
+
+        public float maxSpeed { get; set; }
+
         internal float neighborDist_ = 0.0f;
         internal float radius_ = 0.0f;
         internal float timeHorizon_ = 0.0f;
@@ -61,9 +63,9 @@ namespace RVO
         private Vec2 newVelocity_;
 
 
-        internal void compute(float deltaTime)
+        internal void compute(RVOSimulator simulator, float deltaTime)
         {
-            computeNeighbors();
+            computeNeighbors(simulator);
             computeNewVelocity(deltaTime);
         }
 
@@ -97,7 +99,7 @@ namespace RVO
             velocity_ = Vec2.zero;
             id_ = 0;
             maxNeighbors_ = 0;
-            maxSpeed_ = 0.0f;
+            maxSpeed = 0.0f;
             neighborDist_ = 0.0f;
             radius_ = 0.0f;
             timeHorizon_ = 0.0f;
